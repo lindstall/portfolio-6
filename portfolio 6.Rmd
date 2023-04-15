@@ -1,0 +1,97 @@
+---
+title: "portfolio 6"
+output: html_document
+date: "2023-04-13"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+```{r}
+library(readxl)
+
+library(ggplot2)
+
+df <- read_excel("/Users/lindsaystall/Downloads/PIRUS_Public_May2020.xlsx")
+
+df[df == -99 | df == -88] <- NA
+
+```
+
+```{r}
+count <- sum(df$Changing_Target == 1, na.rm = TRUE)
+
+cat("Number of times Changing_Target had a value of 1:", count)
+```
+
+Now I know that in this dataset, there were 129 instances of terrorists changing their targets over time. I want to figure out what groups these people belonged to.
+
+```{r}
+df_filtered <- df[df$Changing_Target == 1,]
+
+group_names <- unique(df_filtered$Terrorist_Group_Name1)
+
+cat("Terrorist_Group_Names with Members who changed their targets:", paste(group_names, collapse = ", "))
+```
+
+```{r}
+sort(unique(df_filtered$Terrorist_Group_Name1))
+```
+
+The top 10 terrorist groups where people change targets are: 
+ [1] "al-Qaeda core"                                         
+ [2] "Al-Qaeda in Iraq"                                      
+ [3] "al-Qaeda in the Arabian Peninsula (AQAP)"              
+ [4] "al-Shabaab"                                            
+ [5] "Alaska Peacemakers Militia"                            
+ [6] "Animal Liberation Front (ALF)"                         
+ [7] "Armed Forces of National Liberation (FALN)"            
+ [8] "Armed Revolutionary Independence Movement (MIRA)"      
+ [9] "Army of God"                                           
+[10] "Aryan Nations"   
+
+That said, the codebook for this data doesnt specify the direction of this movement (did they start in this group or end in this group?)
+
+```{r}
+count <- sum(df$Anticp_Fatals_Targ == 1, na.rm = TRUE)
+
+cat("Number of times Anticipated_Fatalities_Target had a value of 1:", count)
+```
+
+Most (491) terrorist plots in this dataset anticipated to kill some victims, which was about 1-20 
+
+```{r}
+count <- sum(df$Anticp_Fatals_Targ == 2, na.rm = TRUE)
+
+cat("Number of times Anticipated_Fatalities_Target had a value of 1:", count)
+```
+
+
+```{r}
+count <- sum(df$Anticp_Fatals_Targ == 3, na.rm = TRUE)
+
+cat("Number of times Anticipated_Fatalities_Target had a value of 1:", count)
+```
+
+Terrorist plots in this dataset anticipated to kill many victims (over 20) (106) or a mass amount of victims (over 100) (101) were about equal in number.
+
+```{r}
+pie_data <- df %>% 
+  filter(Anticp_Fatals_Targ %in% c(1,2,3)) %>% 
+  group_by(Anticp_Fatals_Targ) %>% 
+  summarise(n = n())
+
+ggplot(pie_data, aes(x="", y=n, fill=factor(Anticp_Fatals_Targ))) +
+  geom_bar(stat="identity", width=1) +
+  coord_polar("y", start=0) +
+  scale_fill_manual(values = c("#0072B2", "#009E73", "#D55E00"),
+                    labels = c("Some (< 20)", "Many (> 20)", "Mass (> 100)")) +
+  labs(title="Distribution of Anticipated Fatalities in Terrorism Attacks",
+       fill="Response",
+       x=NULL,
+       y=NULL) +
+  theme_void()
+```
+

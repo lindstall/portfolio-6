@@ -86,7 +86,7 @@ pie_data <- df %>%
 ggplot(pie_data, aes(x="", y=n, fill=factor(Anticp_Fatals_Targ))) +
   geom_bar(stat="identity", width=1) +
   coord_polar("y", start=0) +
-  scale_fill_manual(values = c("#0072B2", "#009E73", "#D55E00"),
+  scale_fill_manual(values = c("chartreuse", "magenta", "turquoise"),
                     labels = c("Some (< 20)", "Many (> 20)", "Mass (> 100)")) +
   labs(title="Distribution of Anticipated Fatalities in Terrorism Attacks",
        fill="Response",
